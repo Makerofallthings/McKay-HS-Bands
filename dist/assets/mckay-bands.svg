@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 96" role="img" aria-labelledby="title desc">
+  <title id="title">McKay High School Bands</title>
+  <desc id="desc">An M monogram crossed by musical staff lines beside the McKay Bands wordmark.</desc>
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e3c98c"/>
+      <stop offset="1" stop-color="#9bb6aa"/>
+    </linearGradient>
+  </defs>
+  <g fill="none" stroke="url(#g)" stroke-linecap="round">
+    <path stroke-width="2" d="M10 23h72M10 34h72M10 45h72M10 56h72M10 67h72" opacity=".52"/>
+    <path stroke-width="7" d="M21 72V20l24 35 24-35v52"/>
+    <path stroke-width="3" d="M70 72c14-1 17-8 12-19"/>
+  </g>
+  <g fill="#e8e3d8">
+    <text x="106" y="39" font-family="Georgia, 'Times New Roman', serif" font-size="29" letter-spacing="2">MCKAY</text>
+    <text x="106" y="65" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="700" letter-spacing="5.4">HIGH SCHOOL BANDS</text>
+  </g>
+</svg>
