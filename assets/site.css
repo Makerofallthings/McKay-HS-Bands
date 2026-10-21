@@ -326,7 +326,17 @@ p { margin: 0 0 1rem; }
 
 .page-hero { position:relative; display:grid; align-items:center; padding:calc(var(--header-height) + 2.1rem) 0 2.5rem; border-bottom:1px solid var(--line); overflow:hidden; isolation:isolate; }
 .page-hero::before { display:none; }
-.page-hero::after { content:""; position:absolute; z-index:-1; pointer-events:none; width:min(46vw,580px); aspect-ratio:29/7; right:clamp(12px,3vw,48px); top:50%; background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 580 140'%3E%3Cg stroke='%23ddc28b' stroke-width='1' opacity='.22'%3E%3Cpath d='M8 30H572M8 50H572M8 70H572M8 90H572M8 110H572'/%3E%3C/g%3E%3Cg fill='%23ddc28b' opacity='.34'%3E%3Ctext x='48' y='116' font-family='Segoe UI Symbol,serif' font-size='106'%3E%26%23x1D11E%3B%3C/text%3E%3Ctext x='176' y='108' font-family='Georgia,serif' font-size='88' font-style='italic' font-weight='700'%3EMCK%3C/text%3E%3Cpath d='M500 103C487 92 463 74 463 54c0-18 22-26 36-9 14-17 36-9 36 9 0 20-24 38-35 49z'/%3E%3C/g%3E%3C/svg%3E") center/contain no-repeat; filter:drop-shadow(0 12px 24px rgba(0,0,0,.32)); transform:translateY(-50%) rotate(-4deg); transform-origin:center; }
+.page-hero::after { display:none; }
+.page-hero > .shell,.page-hero > .narrow { position:relative; z-index:1; }
+.page-brand-badge { display:none; }
+/* A quiet staff sits directly along the lower edge of the fixed navigation. */
+.has-page-hero[data-header-design="divider"] .site-header::after { content:""; position:absolute; inset:100% 0 auto; height:28px; pointer-events:none; opacity:.2; background:url("header-clef.svg") 24px center/24px 28px no-repeat,repeating-linear-gradient(to bottom,#ddc28b 0 1px,transparent 1px 3px) left center/100% 13px no-repeat; }
+/* The complete staff becomes a six-percent texture behind the hero content. */
+[data-header-design="watermark"] .page-hero::after { display:block; content:""; position:absolute; inset:0; z-index:0; opacity:.06; pointer-events:none; background:url("header-clef.svg") 3% center/auto 80% no-repeat,repeating-linear-gradient(to bottom,#ddc28b 0 1px,transparent 1px 24px) center/100% 97px no-repeat; }
+/* The monogram belongs to the heading's flow, so it never floats over copy. */
+[data-header-design="badge"] .page-brand-badge { display:inline-flex; align-items:center; gap:.7rem; margin-top:1.2rem; padding:.38rem .9rem; border:1px solid rgba(221,194,139,.22); border-radius:999px; background:rgba(221,194,139,.035); color:#c7b68f; font-family:var(--sans); font-size:.72rem; font-weight:600; font-style:normal; letter-spacing:.16em; line-height:1.7; }
+.badge-clef { font-family:"Segoe UI Symbol",serif; font-size:1.4rem; line-height:1; letter-spacing:0; }
+.badge-heart { font-size:1rem; font-weight:400; letter-spacing:0; }
 .page-hero-grid { display:grid; grid-template-columns:minmax(0,1fr); align-items:center; }
 .page-hero h1 { font-size:clamp(2.6rem,5.7vw,5.5rem); line-height:1.12; text-wrap:balance; }
 .page-hero .eyebrow { margin-bottom:.7rem; }
@@ -563,7 +573,6 @@ p { margin: 0 0 1rem; }
   .support-panel { min-height:0; padding:1.5rem; display:flex; }
   .honors-list article { grid-template-columns:42px 1fr; }
   .page-hero { padding:calc(var(--header-height) + 1.5rem) 0 2rem; }
-  .page-hero::after { width:82vw; right:-5vw; opacity:.56; }
   .editorial-photo-section { padding-bottom:78px; }
   .editorial-photo img { aspect-ratio:4/3; }
   .editorial-photo figcaption { display:grid; gap:.35rem; }

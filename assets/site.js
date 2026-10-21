@@ -1,5 +1,20 @@
 document.documentElement.classList.add('js');
 
+// Alternative header treatments can be compared through shared preview URLs.
+const headerDesign = new URLSearchParams(location.search).get('headerDesign');
+document.documentElement.dataset.headerDesign = ['watermark', 'badge'].includes(headerDesign) ? headerDesign : 'divider';
+if (document.querySelector('.page-hero')) {
+  document.documentElement.classList.add('has-page-hero');
+  const heading = document.querySelector('.page-hero h1');
+  if (heading) {
+    const badge = document.createElement('span');
+    badge.className = 'page-brand-badge';
+    badge.setAttribute('aria-hidden', 'true');
+    badge.innerHTML = '<span class="badge-clef">&#x1D11E;</span><span>MCK</span><span class="badge-heart">&#x2661;</span>';
+    heading.after(badge);
+  }
+}
+
 const pages = [
   { title: 'Home', path: 'index.html', desc: 'McKay High School Bands overview and latest highlights' },
   { title: 'Ensembles', path: 'index.html#ensembles', desc: 'Explore all six performance ensembles' },
