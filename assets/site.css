@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=optional');
 
 :root {
   --ink: #0d1119;
@@ -135,7 +135,7 @@ p { margin: 0 0 1rem; }
 .hero-collage::before { display:none; }
 .hero-collage { inset:0; background:#0d1119; display:grid; grid-template-columns:repeat(12,minmax(0,1fr)); grid-template-rows:38% 30% 32%; gap:3px; }
 .collage-layer { position:relative; overflow:hidden; isolation:isolate; }
-.collage-layer img { width:100%; height:100%; object-fit:cover; filter:saturate(.85) brightness(.95); animation:collageBreathe 26s ease-in-out infinite alternate; }
+.collage-layer img { width:100%; height:100%; object-fit:cover; filter:saturate(.85) brightness(.95); }
 .collage-state { grid-column:3/6; grid-row:1; }
 .collage-state img { object-position:50% 49%; }
 .collage-brass { grid-column:6/10; grid-row:1; }
@@ -163,11 +163,10 @@ p { margin: 0 0 1rem; }
 .hero-montage .champion-medallion small { font-size:.47rem; max-width:90px; margin:0; text-align:left; }
 .hero-montage .scroll-cue { display:none; }
 @media(min-width:1081px) {
-  .hero-montage .hero-grid > div { transform:translateY(-24px); }
+  .hero-montage .hero-grid > div { position:relative; top:-24px; }
   .hero-montage .hero-copy { margin-top:1.25rem; }
 }
 @keyframes collageArrive { from { opacity:0; } to { opacity:1; } }
-@keyframes collageBreathe { from { transform:scale(1.015); } to { transform:scale(1.065) translateY(-1%); } }
 @media(max-width:640px) {
   .hero.hero-montage { min-height:740px; align-items:start; padding-top:calc(var(--header-height) + 3rem); }
   .hero-montage h1 { font-size:clamp(4.4rem,19vw,6.3rem); }
@@ -456,6 +455,8 @@ p { margin: 0 0 1rem; }
 .reveal { opacity:1; transform:none; }
 .js .reveal { opacity:0; transform:translateY(22px); transition:opacity .75s ease,transform .75s ease; }
 .js .reveal.visible { opacity:1; transform:none; }
+/* Keep the landing text in normal rendering, including on tab/back navigation. */
+.js .hero-montage .reveal { opacity:1; transform:none; transition:none; }
 .delay-1 { transition-delay:.1s; }.delay-2 { transition-delay:.2s; }.delay-3 { transition-delay:.3s; }
 
 @keyframes float { 0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-16px) rotate(3deg)} }
