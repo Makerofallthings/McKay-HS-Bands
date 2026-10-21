@@ -1,18 +1,18 @@
 # McKay High School Bands website
 
-This is a buildless, multi-page static website. The deployable files are in `dist/`.
+This is a buildless, multi-page static website. The website's `index.html`, HTML pages, and `assets/` folder are at the repository root.
 
 ## Preview locally
 
-Serve `dist/` with any static file server, then open the printed local URL.
+Serve the repository root with any static file server, then open the printed local URL.
 
 ## GitHub Pages
 
-The workflow in `.github/workflows/pages.yml` publishes `dist/` when changes reach `main`.
+GitHub Pages serves the website directly from `main` without a build step. The workflow checks JavaScript syntax; GitHub's branch deployment publishes the site.
 
 1. In the GitHub repository, open **Settings → Pages**.
-2. Under **Build and deployment**, set **Source** to **GitHub Actions**.
-3. Open **Actions → Deploy website to GitHub Pages → Run workflow** to deploy for the first time.
+2. Under **Build and deployment**, set **Source** to **Deploy from a branch**.
+3. Select branch **main**, folder **/(root)**, then save.
 
 Expected address: https://makerofallthings.github.io/McKay-HS-Bands/
 
@@ -29,12 +29,12 @@ No package installation or build step is needed. All internal assets and navigat
 
 ## Structure
 
-- `dist/index.html`: home page and ensemble directory
-- `dist/*-band.html`, `dist/wind-ensemble.html`, `dist/percussion.html`: six ensemble pages
-- `dist/calendar.html`: live embedded program calendars
-- `dist/director.html`: director profile
-- `dist/contact.html`: contact information, map, and related links
-- `dist/assets/site.css`: responsive layout and visual design
-- `dist/assets/site.js`: navigation, section search, mobile menu, looping photo carousel, live event status, and reveal interactions
-- `dist/assets/`: site icons and photography, including user-supplied program images
+- `index.html`: home page and ensemble directory
+- `*-band.html`, `wind-ensemble.html`, `percussion.html`: six ensemble pages
+- `calendar.html`: live embedded program calendars
+- `director.html`: director profile
+- `contact.html`: contact information, map, and related links
+- `assets/site.css`: responsive layout and visual design
+- `assets/site.js`: navigation, section search, mobile menu, looping photo carousel, live event status, and reveal interactions
+- `assets/`: site icons and photography, including user-supplied program images
 
