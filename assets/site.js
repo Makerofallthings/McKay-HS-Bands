@@ -1,20 +1,5 @@
 document.documentElement.classList.add('js');
 
-// Alternative header treatments can be compared through shared preview URLs.
-const headerDesign = new URLSearchParams(location.search).get('headerDesign');
-document.documentElement.dataset.headerDesign = ['watermark', 'badge'].includes(headerDesign) ? headerDesign : 'divider';
-if (document.querySelector('.page-hero')) {
-  document.documentElement.classList.add('has-page-hero');
-  const heading = document.querySelector('.page-hero h1');
-  if (heading) {
-    const badge = document.createElement('span');
-    badge.className = 'page-brand-badge';
-    badge.setAttribute('aria-hidden', 'true');
-    badge.innerHTML = '<span class="badge-clef">&#x1D11E;</span><span>MCK</span><span class="badge-heart">&#x2661;</span>';
-    heading.after(badge);
-  }
-}
-
 const pages = [
   { title: 'Home', path: 'index.html', desc: 'McKay High School Bands overview and latest highlights' },
   { title: 'Ensembles', path: 'index.html#ensembles', desc: 'Explore all six performance ensembles' },
@@ -92,7 +77,7 @@ function footerMarkup() {
       <div class="footer-col"><h3>Resources</h3><a href="index.html#support">Support the program</a><a href="https://mckay.salkeiz.k12.or.us/" target="_blank" rel="noreferrer">McKay High School</a><a href="https://www.osaa.org/activities/bnd" target="_blank" rel="noreferrer">OSAA Band</a><a href="https://salemyouthsymphony.org/" target="_blank" rel="noreferrer">Salem Youth Symphony</a></div>
       <div class="footer-col"><h3>Contact</h3><a href="mailto:avzaradel_scott@salkeiz.k12.or.us">avzaradel_scott@salkeiz.k12.or.us</a><a href="tel:+15033993080">503-399-3080</a><a href="https://maps.google.com/?q=McKay+High+School+2440+Lancaster+Drive+NE+Salem+OR+97305" target="_blank" rel="noreferrer">2440 Lancaster Dr NE<br>Salem, OR 97305</a></div>
     </div>
-    <div class="shell footer-bottom"><span>© <span data-year></span> McKay High School Bands</span><span>Built for the students, families, faculty, and Salem community.</span></div>
+    <div class="shell footer-bottom"><span>© <span data-year></span> McKay High School Bands</span><span>Website designed by Trenton Cooper</span></div>
   </footer>`;
 }
 
