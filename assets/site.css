@@ -755,6 +755,7 @@ main [id] { scroll-margin-top:calc(var(--header-height) + 20px); }
   .ensemble-puzzle p { margin:10px 0 0; font-size:.86rem; line-height:1.55; }
   .ensemble-puzzle .arrow { width:34px; height:34px; right:16px; bottom:16px; }
   .story-layout { gap:16px; }
+  .story-track { align-items:flex-start; overflow-y:hidden; }
   .story-slide > img { aspect-ratio:4/3; }
   .story-caption { display:block; padding:16px; }
   .story-caption span { font-size:.62rem; letter-spacing:.06em; }

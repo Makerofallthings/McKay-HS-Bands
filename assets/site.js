@@ -451,6 +451,7 @@ document.querySelectorAll('[data-carousel]').forEach((carousel, carouselIndex) =
   if (!track.hasAttribute('tabindex')) track.tabIndex = 0;
 
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  const phoneGallery = matchMedia('(max-width:760px)');
   let updateFrame = 0;
 
   function updateCarouselControls() {
@@ -467,6 +468,14 @@ document.querySelectorAll('[data-carousel]').forEach((carousel, carouselIndex) =
     }, { index: 0, distance: Infinity }).index;
     const counter = carousel.querySelector('[data-carousel-current]');
     if (counter) counter.textContent = String(currentIndex + 1).padStart(2, '0');
+    // Other slides may have longer captions and photo credits. On phones,
+    // reserve only the active slide's natural height instead of the tallest one.
+    if (phoneGallery.matches && slides[currentIndex]) {
+      const height = `${Math.ceil(slides[currentIndex].getBoundingClientRect().height)}px`;
+      if (track.style.height !== height) track.style.height = height;
+    } else {
+      track.style.removeProperty('height');
+    }
   }
 
   function scheduleCarouselUpdate() {
@@ -513,7 +522,12 @@ document.querySelectorAll('[data-carousel]').forEach((carousel, carouselIndex) =
     scrollCarousel(event.key === 'ArrowRight' ? 1 : -1);
   });
 
-  if ('ResizeObserver' in window) new ResizeObserver(scheduleCarouselUpdate).observe(track);
+  if ('ResizeObserver' in window) {
+    const galleryResize = new ResizeObserver(scheduleCarouselUpdate);
+    galleryResize.observe(track);
+    [...track.children].forEach(slide => galleryResize.observe(slide));
+  }
+  phoneGallery.addEventListener('change', scheduleCarouselUpdate);
   addEventListener('load', scheduleCarouselUpdate, { once: true });
   updateCarouselControls();
 });
