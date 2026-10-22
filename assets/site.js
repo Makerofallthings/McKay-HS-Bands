@@ -453,6 +453,55 @@ document.querySelectorAll('[data-carousel]').forEach((carousel, carouselIndex) =
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
   const phoneGallery = matchMedia('(max-width:760px)');
   let updateFrame = 0;
+  const toggle = carousel.querySelector('[data-carousel-toggle]');
+  let paused = reducedMotion.matches;
+  let inView = false;
+  let interacting = false;
+  let autoplayTimer;
+
+  function scheduleAutoplay() {
+    clearTimeout(autoplayTimer);
+    if (!toggle || paused || !inView || interacting || document.hidden || track.contains(document.activeElement)) return;
+    autoplayTimer = setTimeout(() => {
+      scrollCarousel(1);
+      scheduleAutoplay();
+    }, 2000);
+  }
+
+  function updatePlaybackButton() {
+    if (!toggle) return;
+    const label = paused ? 'Play slideshow' : 'Pause slideshow';
+    toggle.setAttribute('aria-label', label);
+    toggle.title = label;
+    toggle.querySelector('path').setAttribute('d', paused ? 'M4 2l10 6-10 6z' : 'M3 2h3v12H3zM10 2h3v12h-3z');
+  }
+  toggle?.setAttribute('aria-controls', track.id);
+  toggle?.addEventListener('click', () => {
+    paused = !paused;
+    updatePlaybackButton();
+    scheduleAutoplay();
+  });
+  // Start only when the gallery is on screen; never advance in a background tab.
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(entries => {
+      inView = entries[0].isIntersecting && entries[0].intersectionRatio >= .25;
+      scheduleAutoplay();
+    }, { threshold: .25 }).observe(carousel);
+  }
+  track.addEventListener('pointerdown', () => { interacting = true; scheduleAutoplay(); }, { passive: true });
+  addEventListener('pointerup', () => { if (interacting) { interacting = false; scheduleAutoplay(); } }, { passive: true });
+  addEventListener('pointercancel', () => { interacting = false; scheduleAutoplay(); }, { passive: true });
+  track.addEventListener('focusin', scheduleAutoplay);
+  track.addEventListener('focusout', () => requestAnimationFrame(scheduleAutoplay));
+  document.addEventListener('visibilitychange', scheduleAutoplay);
+  addEventListener('pagehide', () => clearTimeout(autoplayTimer));
+  addEventListener('pageshow', scheduleAutoplay);
+  reducedMotion.addEventListener('change', () => {
+    if (reducedMotion.matches) paused = true;
+    updatePlaybackButton();
+    scheduleAutoplay();
+  });
+  updatePlaybackButton();
 
   function updateCarouselControls() {
     const maximum = Math.max(0, track.scrollWidth - track.clientWidth);
@@ -513,13 +562,15 @@ document.querySelectorAll('[data-carousel]').forEach((carousel, carouselIndex) =
     track.scrollTo({ left: target, behavior: reducedMotion.matches ? 'auto' : 'smooth' });
   }
 
-  previous.addEventListener('click', () => scrollCarousel(-1));
-  next.addEventListener('click', () => scrollCarousel(1));
+  previous.addEventListener('click', () => { scrollCarousel(-1); scheduleAutoplay(); });
+  next.addEventListener('click', () => { scrollCarousel(1); scheduleAutoplay(); });
+  track.addEventListener('scrollend', scheduleAutoplay);
   track.addEventListener('scroll', scheduleCarouselUpdate, { passive: true });
   track.addEventListener('keydown', event => {
     if (event.target !== track || !['ArrowLeft', 'ArrowRight'].includes(event.key)) return;
     event.preventDefault();
     scrollCarousel(event.key === 'ArrowRight' ? 1 : -1);
+    scheduleAutoplay();
   });
 
   if ('ResizeObserver' in window) {
@@ -539,7 +590,6 @@ document.querySelectorAll('.ensemble-puzzle').forEach(grid => {
   function drawPuzzle() {
     const columns = getComputedStyle(grid).gridTemplateColumns.split(' ').length;
     const rows = Math.ceil(cards.length / columns);
-    const phonePuzzle = matchMedia('(max-width:760px)').matches;
     cards.forEach((card, index) => {
       const width = card.clientWidth;
       const height = card.clientHeight;
@@ -552,9 +602,9 @@ document.querySelectorAll('.ensemble-puzzle').forEach(grid => {
         const ny = -dx / length;
         const point = (distance, depth = 0) => `${x + dx * distance + nx * depth},${y + dy * distance + ny * depth}`;
         if (!tab) { path += ` L ${point(1)}`; return; }
-        const neck = (phonePuzzle ? 9 : 12) / length;
-        const shoulder = (phonePuzzle ? 18 : 25) / length;
-        const depth = (phonePuzzle ? 10 : 18) * tab;
+        const neck = 12 / length;
+        const shoulder = 25 / length;
+        const depth = 18 * tab;
         path += ` L ${point(center - neck)}`;
         path += ` C ${point(center - neck, depth * .28)} ${point(center - shoulder, depth * .35)} ${point(center - shoulder, depth * .7)}`;
         path += ` C ${point(center - shoulder, depth * 1.22)} ${point(center + shoulder, depth * 1.22)} ${point(center + shoulder, depth * .7)}`;
@@ -562,10 +612,9 @@ document.querySelectorAll('.ensemble-puzzle').forEach(grid => {
         path += ` L ${point(1)}`;
       }
       edge(0, 0, width, 0, row ? -(col % 2 ? -1 : 1) : 0);
-      // Put phone-side connections in the reserved bottom area, below the copy.
-      edge(width, 0, 0, height, col < columns - 1 ? (row % 2 ? -1 : 1) : 0, phonePuzzle ? 1 - 30 / height : .5);
+      edge(width, 0, 0, height, col < columns - 1 ? (row % 2 ? -1 : 1) : 0);
       edge(width, height, -width, 0, row < rows - 1 ? (col % 2 ? -1 : 1) : 0);
-      edge(0, height, 0, -height, col ? -(row % 2 ? -1 : 1) : 0, phonePuzzle ? 30 / height : .5);
+      edge(0, height, 0, -height, col ? -(row % 2 ? -1 : 1) : 0);
       let svg = card.querySelector('.puzzle-shape');
       if (!svg) {
         svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');

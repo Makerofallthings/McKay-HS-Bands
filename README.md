@@ -26,6 +26,10 @@ Phone layouts use a dedicated hero composition, grouped menu, full-width inline 
 
 To regenerate responsive assets after replacing photography, run `node scripts/optimize-images.mjs` in a development environment with Sharp installed, or pass the absolute path of an existing Sharp module as the first argument. Publish the generated assets alongside the HTML; publishing still needs no build step.
 
+The gallery advances about every two seconds while at least a quarter of it is visible. Its single play/pause control works on phones and desktops. Autoplay stops off-screen, in background tabs, during touch interaction, and while keyboard focus is inside a slide; reduced-motion visitors start paused.
+
+Manrope and Playfair Display are self-hosted and preloaded from `assets/fonts/` to keep typography consistent between visits. Their SIL Open Font License notices are included alongside the font files.
+
 ## Content sources
 
 - Existing McKay Bands website: ensemble descriptions, live calendar IDs, contact details, marching music file, jazz audition folders, and external resources.
