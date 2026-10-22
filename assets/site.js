@@ -539,31 +539,33 @@ document.querySelectorAll('.ensemble-puzzle').forEach(grid => {
   function drawPuzzle() {
     const columns = getComputedStyle(grid).gridTemplateColumns.split(' ').length;
     const rows = Math.ceil(cards.length / columns);
+    const phonePuzzle = matchMedia('(max-width:760px)').matches;
     cards.forEach((card, index) => {
       const width = card.clientWidth;
       const height = card.clientHeight;
       const col = index % columns;
       const row = Math.floor(index / columns);
       let path = 'M 0 0';
-      function edge(x, y, dx, dy, tab) {
+      function edge(x, y, dx, dy, tab, center = .5) {
         const length = Math.hypot(dx, dy);
         const nx = dy / length;
         const ny = -dx / length;
         const point = (distance, depth = 0) => `${x + dx * distance + nx * depth},${y + dy * distance + ny * depth}`;
         if (!tab) { path += ` L ${point(1)}`; return; }
-        const neck = 12 / length;
-        const shoulder = 25 / length;
-        const depth = 18 * tab;
-        path += ` L ${point(.5 - neck)}`;
-        path += ` C ${point(.5 - neck, depth * .28)} ${point(.5 - shoulder, depth * .35)} ${point(.5 - shoulder, depth * .7)}`;
-        path += ` C ${point(.5 - shoulder, depth * 1.22)} ${point(.5 + shoulder, depth * 1.22)} ${point(.5 + shoulder, depth * .7)}`;
-        path += ` C ${point(.5 + shoulder, depth * .35)} ${point(.5 + neck, depth * .28)} ${point(.5 + neck)}`;
+        const neck = (phonePuzzle ? 9 : 12) / length;
+        const shoulder = (phonePuzzle ? 18 : 25) / length;
+        const depth = (phonePuzzle ? 10 : 18) * tab;
+        path += ` L ${point(center - neck)}`;
+        path += ` C ${point(center - neck, depth * .28)} ${point(center - shoulder, depth * .35)} ${point(center - shoulder, depth * .7)}`;
+        path += ` C ${point(center - shoulder, depth * 1.22)} ${point(center + shoulder, depth * 1.22)} ${point(center + shoulder, depth * .7)}`;
+        path += ` C ${point(center + shoulder, depth * .35)} ${point(center + neck, depth * .28)} ${point(center + neck)}`;
         path += ` L ${point(1)}`;
       }
       edge(0, 0, width, 0, row ? -(col % 2 ? -1 : 1) : 0);
-      edge(width, 0, 0, height, col < columns - 1 ? (row % 2 ? -1 : 1) : 0);
+      // Put phone-side connections in the reserved bottom area, below the copy.
+      edge(width, 0, 0, height, col < columns - 1 ? (row % 2 ? -1 : 1) : 0, phonePuzzle ? 1 - 30 / height : .5);
       edge(width, height, -width, 0, row < rows - 1 ? (col % 2 ? -1 : 1) : 0);
-      edge(0, height, 0, -height, col ? -(row % 2 ? -1 : 1) : 0);
+      edge(0, height, 0, -height, col ? -(row % 2 ? -1 : 1) : 0, phonePuzzle ? 30 / height : .5);
       let svg = card.querySelector('.puzzle-shape');
       if (!svg) {
         svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
