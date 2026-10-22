@@ -18,6 +18,14 @@ Expected address: https://makerofallthings.github.io/McKay-HS-Bands/
 
 No package installation or build step is needed. All internal assets and navigation use relative paths so they work under the repository's Pages subdirectory.
 
+## Mobile layout and images
+
+Phone layouts use a dedicated hero composition, grouped menu, full-width inline search, compact puzzle cards, and an agenda-first calendar with a month-view switch. Desktop layouts retain their existing composition. All content and links remain available.
+
+`assets/responsive/` contains pre-generated 480px and 960px WebP photographs and smaller copies of the existing site emblem. HTML `srcset` lets browsers select an appropriate image; off-screen editorial photos load lazily. Original photographs are retained. No image conversion runs for visitors, and no backend service is required.
+
+To regenerate responsive assets after replacing photography, run `node scripts/optimize-images.mjs` in a development environment with Sharp installed, or pass the absolute path of an existing Sharp module as the first argument. Publish the generated assets alongside the HTML; publishing still needs no build step.
+
 ## Content sources
 
 - Existing McKay Bands website: ensemble descriptions, live calendar IDs, contact details, marching music file, jazz audition folders, and external resources.

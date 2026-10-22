@@ -32,7 +32,7 @@ function headerMarkup() {
     <a class="skip-link" href="#main">Skip to content</a>
     <header class="site-header" data-header>
       <div class="nav-shell">
-        <a class="brand" href="index.html" aria-label="McKay High School Bands home"><img src="assets/mckay-favicon.png" alt="" width="1280" height="1280"><span>McKay<small>High School Bands</small></span></a>
+        <a class="brand" href="index.html" aria-label="McKay High School Bands home"><img src="assets/responsive/mckay-mark-192.webp" alt="" width="192" height="192"><span>McKay<small>High School Bands</small></span></a>
         <nav class="desktop-nav" aria-label="Primary navigation">
           <a href="index.html"${active('index.html')}>Home</a>
           <div class="dropdown">
@@ -57,8 +57,15 @@ function headerMarkup() {
         </div>
         <button class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-navigation" data-menu-toggle><span></span></button>
         <nav class="mobile-nav" id="mobile-navigation" data-mobile-nav aria-label="Mobile navigation" aria-hidden="true" hidden>
-          ${pages.map(p => `<a href="${p.path}"${active(p.path)}>${p.title}</a>`).join('')}
-          <a class="nav-support" href="index.html#support">Support the program</a>
+          <div class="mobile-nav-primary">
+            ${pages.filter(p => ['index.html','calendar.html','director.html','contact.html'].includes(p.path)).map(p => `<a href="${p.path}"${active(p.path)}>${p.title}<span aria-hidden="true">↗</span></a>`).join('')}
+          </div>
+          <details class="mobile-ensembles"${ensemblePages.includes(current) ? ' open' : ''}>
+            <summary>Ensembles <span>Explore all six <b aria-hidden="true">+</b></span></summary>
+            <div class="mobile-ensemble-links">${pages.filter(p => ensemblePages.includes(p.path) && !p.path.includes('#')).map(p => `<a href="${p.path}"${active(p.path)}>${p.title}<span aria-hidden="true">→</span></a>`).join('')}</div>
+            <a class="mobile-all-ensembles" href="index.html#ensembles">Compare all ensembles →</a>
+          </details>
+          <a class="nav-support" href="index.html#support">Support the program <span aria-hidden="true">↗</span></a>
           <button class="nav-button" type="button" data-search-open>Search the site</button>
         </nav>
       </div>
@@ -70,7 +77,7 @@ function footerMarkup() {
   <footer class="site-footer">
     <div class="shell footer-grid">
       <div class="footer-brand">
-        <img src="assets/mckay-favicon.png" alt="McKay Band trumpet and crescent emblem" width="1280" height="1280">
+        <img src="assets/responsive/mckay-mark-192.webp" alt="McKay Band trumpet and crescent emblem" width="192" height="192" loading="lazy" decoding="async">
         <p>Music with purpose. A home for ambitious, expressive student musicians in Salem, Oregon.</p>
       </div>
       <div class="footer-col"><h3>Explore</h3><a href="index.html#ensembles">Ensembles</a><a href="calendar.html">Calendar</a><a href="director.html">Director</a><a href="contact.html">Contact</a></div>
@@ -135,7 +142,19 @@ document.addEventListener('click', event => {
   if (!mobileNav.contains(event.target) && !menuToggle.contains(event.target)) closeMenu();
 });
 
-addEventListener('resize', () => closeMenu(), { passive: true });
+// A phone keyboard or browser toolbar can change height; only close at desktop.
+const desktopNavigation = matchMedia('(min-width:1081px)');
+desktopNavigation.addEventListener('change', event => { if (event.matches) closeMenu(); });
+addEventListener('pageshow', () => closeMenu());
+
+document.addEventListener('keydown', event => {
+  if (event.key !== 'Tab' || !mobileNav.classList.contains('open')) return;
+  const controls = [menuToggle, ...focusableElements(mobileNav)];
+  const first = controls[0];
+  const last = controls[controls.length - 1];
+  if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+  else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+});
 
 const modal = document.querySelector('[data-search-modal]');
 const input = document.querySelector('[data-search-input]');
@@ -257,7 +276,7 @@ function closeSearch({ restoreFocus = true } = {}) {
 }
 
 function focusableElements(container) {
-  return [...container.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])')]
+  return [...container.querySelectorAll('a[href], summary, button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])')]
     .filter(element => !element.hidden && element.getClientRects().length);
 }
 
@@ -295,7 +314,13 @@ document.querySelectorAll('[data-search-open]').forEach(button => {
   button.addEventListener('click', () => openSearch(button));
 });
 document.querySelector('[data-search-close]').addEventListener('click', () => closeSearch());
-input.addEventListener('input', e => renderResults(e.target.value));
+let searchInputTimer;
+input.addEventListener('input', e => {
+  clearTimeout(searchInputTimer);
+  ++searchRevision;
+  const query = e.target.value;
+  searchInputTimer = setTimeout(() => renderResults(query), 120);
+});
 document.addEventListener('click', e => {
   if (modal.classList.contains('open') && !header.contains(e.target)) closeSearch({ restoreFocus: false });
 });
@@ -335,6 +360,35 @@ addEventListener('keydown', e => {
     closeMenu({ restoreFocus: true });
   }
 });
+
+// An agenda is legible on a phone; the complete month view remains one tap away.
+const fullCalendar = document.querySelector('.calendar-shell iframe');
+if (fullCalendar) {
+  const originalCalendar = new URL(fullCalendar.src);
+  const phoneCalendar = matchMedia('(max-width:760px)');
+  let chosenCalendarView = null;
+  const views = document.createElement('div');
+  views.className = 'calendar-view-options';
+  views.setAttribute('role', 'group');
+  views.setAttribute('aria-label', 'Calendar view');
+  views.innerHTML = '<button type="button" data-calendar-view="AGENDA">Agenda</button><button type="button" data-calendar-view="MONTH">Month</button>';
+  fullCalendar.before(views);
+  function showCalendarView() {
+    const view = chosenCalendarView || (phoneCalendar.matches ? 'AGENDA' : originalCalendar.searchParams.get('mode') || 'MONTH');
+    const url = new URL(originalCalendar);
+    url.searchParams.set('mode', view);
+    if (fullCalendar.src !== url.href) fullCalendar.src = url.href;
+    views.querySelectorAll('button').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.calendarView === view)));
+  }
+  views.addEventListener('click', event => {
+    const button = event.target.closest('[data-calendar-view]');
+    if (!button) return;
+    chosenCalendarView = button.dataset.calendarView;
+    showCalendarView();
+  });
+  phoneCalendar.addEventListener('change', showCalendarView);
+  showCalendarView();
+}
 
 const eventItems = [...document.querySelectorAll('[data-event-item]')];
 if (eventItems.length) {
@@ -539,6 +593,10 @@ const reveal = new IntersectionObserver(entries => entries.forEach(entry => {
   if (entry.isIntersecting) { entry.target.classList.add('visible'); reveal.unobserve(entry.target); }
 }), { threshold: .14 });
 document.querySelectorAll('.reveal').forEach(el => reveal.observe(el));
+
+document.addEventListener('visibilitychange', () => {
+  document.documentElement.classList.toggle('page-inactive', document.hidden);
+});
 
 if (matchMedia('(pointer:fine)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
   document.querySelectorAll('.ensemble-card, .spotlight-card').forEach(card => {
